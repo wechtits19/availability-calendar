@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {Calendar, momentLocalizer} from 'react-big-calendar';
+import React, { useState, useEffect } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Entry from './Entry';
-import {fetchAvailabilities} from './api';
+import { fetchAvailabilities } from './api';
 
 interface MainCalendarProps {
     house?: number;
@@ -13,14 +13,17 @@ interface MainCalendarProps {
 const localizer = momentLocalizer(moment);
 
 const MainCalendar: React.FC<MainCalendarProps> = ({
-                                                       house,
-                                                       setEditingHouse
-                                                   }) => {
+    house,
+    setEditingHouse
+}) => {
     const [entries, setEntries] = useState<Entry[]>([]);
 
 
     useEffect(() => {
-        fetchAvailabilities().then(setEntries);
+        fetchAvailabilities().then(entries => {
+            entries.map(e => e.date = new Date(e.date))
+            setEntries(entries)
+        });
     }, []);
 
 
@@ -39,25 +42,29 @@ const MainCalendar: React.FC<MainCalendarProps> = ({
     // ToDo: Highlight days with own house number
 
     return (
-        <div style={{height: 500, position: 'relative'}}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px'
-            }}>
-                <h2>{house ? `House Number: ${house}` : 'No House Selected'}</h2>
+        <div className='h-full'>
+            <div className='h-1/5 content-center'>
+                {house ? `House Number: ${house}` : 'No House Selected'}
                 <button onClick={() => setEditingHouse(true)}>Edit</button>
             </div>
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{height: 'calc(100% - 50px)'}}
-            />
+            <div className='h-4/5'>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    views={['month', 'week']}
+                    // step={1} // Reduces grid height
+                    // timeslots={1} // Combines grid rows
+                    min={new Date(2024, 0, 1, 0, 0, 0)} // Midnight
+                    max={new Date(2024, 0, 1, 0, 0, 0)} // Midnight
+                />
+            </div>
         </div>
     );
 };
+
+
+
 
 export default MainCalendar;
