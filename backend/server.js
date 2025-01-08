@@ -3,19 +3,23 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../dist')));
+
 // Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/availability', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect('mongodb://user:pass@localhost:27017?directConnection=true')
+const connectionString = process.env.MONGODB_PRIMARY_CONNECTION_STRING || 'mongodb://user:pass@localhost:27017?directConnection=true';
+
+mongoose.connect(connectionString)
     .then(() => {
-        console.log('Verbunden mit MongoDB');
+        console.log('Connected to MongoDB');
     })
     .catch((error) => {
-        console.error('Fehler beim Verbinden mit MongoDB:', error);
+        console.error('Error connecting to MongoDB:', error);
     });
 
 const availabilitySchema = new mongoose.Schema({
@@ -47,6 +51,12 @@ app.post('/api/availability/:house', async (req, res) => {
     res.status(200).send('Availabilities saved');
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+  });
+  
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
