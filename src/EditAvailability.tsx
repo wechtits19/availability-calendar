@@ -22,15 +22,15 @@ const EditAvailability: React.FC<EditAvailabilityProps> = ({ house, close }) => 
             });
     }, []);
 
-    const compareEntry = (a: Entry, b: Entry) => {
-        if (a.date < b.date) {
-            return -1;
-        }
-        if (a.date > b.date) {
-            return 1;
-        }
-        return 0;
-    }
+    // const compareEntry = (a: Entry, b: Entry) => {
+    //     if (a.date < b.date) {
+    //         return -1;
+    //     }
+    //     if (a.date > b.date) {
+    //         return 1;
+    //     }
+    //     return 0;
+    // }
 
     const handleDateClick = (date: Date | null) => {
         if (!date) {
