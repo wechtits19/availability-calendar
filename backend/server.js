@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../dist')));
 
 // Connect to MongoDB
-const connectionString = process.env.MONGODB_PRIMARY_CONNECTION_STRING || 'mongodb://user:pass@localhost:27017?directConnection=true';
+const connectionString = process.env.REACT_APP_MONGODB_PRIMARY_CONNECTION_STRING || 'mongodb://user:pass@localhost:27017?directConnection=true';
 
 mongoose.connect(connectionString)
     .then(() => {
